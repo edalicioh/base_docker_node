@@ -1,0 +1,5 @@
+node_modules/
+.docker/
+.env
+yarn-error.log
+yarn.lock

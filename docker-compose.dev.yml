@@ -1,0 +1,44 @@
+version: "3.1"
+
+networks:
+  net_base_node:
+    driver: bridge
+
+services:
+  backend:
+    image: node:latest
+    container_name: "backend_${APP_NAME}_dev"
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+    volumes:
+      - .:/usr/src/app
+    working_dir: /usr/src/app
+    networks:
+      - net_base_node
+    command: yarn dev
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  postgres:
+    container_name: "postgres_${APP_NAME}_dev"
+    hostname: postgres
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+      PGDATA: /var/lib/postgres/data/pgdata
+    volumes:
+      - ./.docker:/var/lib/
+
+    ports:
+      - ${DB_PORT}:5432
+    networks:
+      - net_base_node
